@@ -11,6 +11,7 @@
 // ******************************************************************
 
 using System;
+using System.Reflection;
 using Windows.UI.Xaml.Data;
 
 namespace Microsoft.Toolkit.Uwp.UI.Converters
@@ -63,7 +64,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Converters
         /// <returns>The value to be passed to the source object.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            bool result = Equals(value, ConverterTools.Convert(TrueValue, targetType));
+            if (!targetType.GetTypeInfo().IsAssignableFrom(typeof(bool).GetTypeInfo()))
+            {
+                throw new InvalidOperationException("The target type must be assignable from a Boolean.");
+            }
+
+            bool result = Equals(value, ConverterTools.Convert(TrueValue, value.GetType()));
 
             if (ConverterTools.TryParseBool(parameter))
             {
